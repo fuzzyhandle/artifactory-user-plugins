@@ -74,6 +74,7 @@ import org.artifactory.repo.RepoPathFactory
 
 executions {
     archive_old_artifacts { params ->
+        def dryRun = params['dryRun'] ? params['dryRun'][0] as Boolean : true
         def filePattern = params['filePattern'] ? params['filePattern'][0] as String : '*'
         def srcRepo = params['srcRepo'] ? params['srcRepo'][0] as String : ''
         def archiveRepo = params['archiveRepo'] ? params['archiveRepo'][0] as String : ''
@@ -100,7 +101,8 @@ executions {
             excludePropertySet,
             includePropertySet,
             archiveProperty,
-            numKeepArtifacts)
+            numKeepArtifacts,
+            dryRun)
     }
 }
 
@@ -133,7 +135,9 @@ private archiveOldArtifacts(
     excludePropertySet,
     includePropertySet,
     archiveProperty,
-    numKeepArtifacts) {
+    numKeepArtifacts,
+    dryRun) {
+    log.info('Dry Run is : {}', dryRun)
     log.warn('Starting archive process for old artifacts ...')
     log.info('File match pattern: {}', filePattern)
     log.info('Source repository: {}', srcRepo)
@@ -259,29 +263,34 @@ private archiveOldArtifacts(
 
                 // One last check to make sure we actually want to archive the artifact
                 if (!keepArtifact) {
-                    log.warn('About to archive artifact: {}', artifact)
-
-                    // Get the properties from the existing artifact
-                    Properties properties = repositories.getProperties(artifact)
-
-                    // Deploy over the existing artifact with a 1-byte file
-                    /*byte[] buf = new byte[1]
-                    def status = repositories.deploy(artifact, new ByteArrayInputStream(buf))
-                    log.debug('Status of deploy: {}', status)
-                    if (status.isError()) {
-                        log.error('Call to deploy artifact {} failed!', artifact)
+                    if (dryRun) {
+                        log.info('Dry Run - Archive artifact: {}', artifact)
                     }
+                    else {
+                        log.warn('About to archive artifact: {}', artifact)
 
-                    // Add all of the properties back to the artifact
-                    properties.keys().each { key ->
-                        Set<String> values = properties.get(key)
-                        log.debug('Adding key: {}, values: {} to re-deployed artifact', key, values)
-                        repositories.setProperty(artifact, key, *(values as List))
+                        // Get the properties from the existing artifact
+                        Properties properties = repositories.getProperties(artifact)
+
+                        // Deploy over the existing artifact with a 1-byte file
+                        /*byte[] buf = new byte[1]
+                        def status = repositories.deploy(artifact, new ByteArrayInputStream(buf))
+                        log.debug('Status of deploy: {}', status)
+                        if (status.isError()) {
+                            log.error('Call to deploy artifact {} failed!', artifact)
+                        }
+
+                        // Add all of the properties back to the artifact
+                        properties.keys().each { key ->
+                            Set<String> values = properties.get(key)
+                            log.debug('Adding key: {}, values: {} to re-deployed artifact', key, values)
+                            repositories.setProperty(artifact, key, *(values as List))
+                        }
+                        */
+                        // Call the function to move the artifact
+                        moveBuildArtifact(archiveRepo, artifact, archiveProperty, todayTime)
+                        log.debug('Archived artifact {}', artifact,archiveRepo)
                     }
-                    */
-                    // Call the function to move the artifact
-                    moveBuildArtifact(archiveRepo, artifact, archiveProperty, todayTime)
-
                     artifactsArchived++
                 }
             } else {
