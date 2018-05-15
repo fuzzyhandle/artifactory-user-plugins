@@ -265,7 +265,7 @@ private archiveOldArtifacts(
                     Properties properties = repositories.getProperties(artifact)
 
                     // Deploy over the existing artifact with a 1-byte file
-                    byte[] buf = new byte[1]
+                    /*byte[] buf = new byte[1]
                     def status = repositories.deploy(artifact, new ByteArrayInputStream(buf))
                     log.debug('Status of deploy: {}', status)
                     if (status.isError()) {
@@ -278,7 +278,7 @@ private archiveOldArtifacts(
                         log.debug('Adding key: {}, values: {} to re-deployed artifact', key, values)
                         repositories.setProperty(artifact, key, *(values as List))
                     }
-
+                    */
                     // Call the function to move the artifact
                     moveBuildArtifact(archiveRepo, artifact, archiveProperty, todayTime)
 
