@@ -5,13 +5,11 @@ This plugin is used to archive artifacts from a given source repository in
 Artifactory to a given destination repository. The artifacts are chosen based on
 a mixture of available parameters.
 
-Note that this plugin will delete your artifacts. The archive process is
-designed to preserve the name, path, and properties of an artifact, but save
-disk space by deleting the file contents. The artifact contents will be replaced
-with a one-byte file, and this 'stub' file will then be moved to the archive
-repository. This plugin is to be used for build artifacts that are no longer
-needed, when it's still useful to keep the build around for auditing or history
-purposes.
+Note that this plugin will move your artifacts. The archive process is
+designed to preserve the name, path, and properties of an artifact. The artifact
+will be moved to the archive repository. This plugin is to be used for build
+artifacts that are no longer needed, when it's still useful to keep the build
+around for auditing or history purposes.
 
 Installation
 ------------
@@ -34,8 +32,6 @@ To install this plugin:
 Features
 --------
 
-- Re-deploys artifacts that are to be archived with a 1-byte file, to save disk
-  space.
 - Archived artifacts are moved to an archive repository, to be separate from
   non-archived artifacts.
 - Archived artifacts retain all properties that were set, and are also tagged
@@ -49,6 +45,9 @@ Input Parameters
 - `archiveRepo` - the repository where matching artifacts are archived to
 - `archiveProperty` - the name of the property to use when tagging the archived
   artifact with the archive timestamp
+- `dryRun` - set this to false explicity when the artifacts need to be moved.
+  By default `dryRun` is assumed to be true and no changes are made to any of
+  the artifacts
 
 ### Available 'time period' archive policies: ###
 
@@ -152,10 +151,6 @@ Archive Process
 The 'archive' process performs the following:
 
 - Grabs all of the currently set properties on the artifact
-- Does a deploy over top of the artifact with a 1-byte size file, to conserve
-  space
-- Adds all of the previously held attributes to the newly deployed 1-byte size
-  artifact
 - Moves the artifact from the source repository to the destination repository
   specified
 - Adds a property containing the archive timestamp to the artifact
