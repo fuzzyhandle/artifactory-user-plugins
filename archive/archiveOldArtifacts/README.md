@@ -52,10 +52,10 @@ Input Parameters
 
 ### Available 'time period' archive policies: ###
 
-- `lastModified` - the last time the artifact was modified
-- `lastUpdated` - the last time the artifact was updated
-- `created` - the creation date of the artifact
-- `lastDownloaded` - the last time the artifact was downloaded
+- `lastModifiedDays` - the last time the artifact was modified
+- `lastUpdatedDays` - the last time the artifact was updated
+- `createdDays` - the creation date of the artifact
+- `lastDownloadedDays` - the last time the artifact was downloaded
 - `age` - the age of the artifact
 
 NOTE: the time period archive policies are all specified in number of days
