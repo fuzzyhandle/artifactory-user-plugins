@@ -176,7 +176,8 @@ private archiveOldArtifacts(
     boolean archiveIncludeProperties = true
     // Total count of artifacts that were archived
     int artifactsArchived = 0
-
+    def lstArchive = []
+    
     artifactsCleanedUp =
         searches.artifactsByName(filePattern, srcRepo).each { artifact ->
             log.info('Search found artifact: {}', artifact)
@@ -263,6 +264,7 @@ private archiveOldArtifacts(
 
                 // One last check to make sure we actually want to archive the artifact
                 if (!keepArtifact) {
+                    lstArchive.add(artifact.getId())
                     if (dryRun) {
                         log.info('Dry Run - Archive artifact: {}', artifact)
                     }
@@ -302,7 +304,8 @@ private archiveOldArtifacts(
         }
 
     log.warn('Process found {} total artifact(s)', artifactsCleanedUp.size)
-    log.warn('Process archived {} total artifact(s)', artifactsArchived)
+    log.warn('Process archived {} total artifact(s)', lstArchive.size())
+    log.warn('Process archived these artifact(s) \n {}', lstArchive)
 }
 
 // Function to move the build artifact and set a property for the time it was moved
