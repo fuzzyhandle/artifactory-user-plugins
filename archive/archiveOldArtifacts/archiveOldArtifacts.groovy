@@ -74,7 +74,10 @@ import org.artifactory.repo.RepoPathFactory
 
 executions {
     archive_old_artifacts { params ->
-        def dryRun = params['dryRun'] ? params['dryRun'][0] as Boolean : true
+        //def dryRun = params['dryRun'] ? params['dryRun'][0] as Boolean : true
+        def dryRunS = params['dryRun'] ? params['dryRun'][0] as String: 'true'
+        boolean dryRun = dryRunS ? dryRunS.toBoolean() : true
+
         def filePattern = params['filePattern'] ? params['filePattern'][0] as String : '*'
         def srcRepo = params['srcRepo'] ? params['srcRepo'][0] as String : ''
         def archiveRepo = params['archiveRepo'] ? params['archiveRepo'][0] as String : ''
