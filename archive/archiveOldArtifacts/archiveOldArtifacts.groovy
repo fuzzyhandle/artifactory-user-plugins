@@ -388,19 +388,24 @@ boolean checkArchiveTimingPolicies(
     if (lastDownloadedDays != 0) {
         // Get the StatsInfo on the item
         def statsInfo = (StatsInfo) repositories.getStats(artifact)
-        log.debug('Artifact {} stats info: {}', artifact, statsInfo)
-
-        // Get the last downloaded date
-        def lastDownloadedTime = new Date(statsInfo.getLastDownloaded())
-        log.debug('{} was last downloaded: {}', artifact, lastDownloadedTime)
-
-        // Calculate the days between today and the chosen policy time
-        compareDays = getCompareDays(todayTime, lastDownloadedTime.time)
-        log.debug('{} days since last downloaded: {}', artifact, compareDays)
-
-        // Check if the number of days meets the days specified to archive
-        if (!checkTimingPolicy(compareDays, lastDownloadedDays, artifact, 'last downloaded')) {
-            return false
+        if (statsInfo != null)
+        {
+            log.debug('Artifact {} stats info: {}', artifact, statsInfo)
+            if (statsInfo.getDownloadCount() > 0)
+            {
+                // Get the last downloaded date
+                def lastDownloadedTime = new Date(statsInfo.getLastDownloaded())
+                log.debug('{} was last downloaded: {}', artifact, lastDownloadedTime)
+        
+                // Calculate the days between today and the chosen policy time
+                compareDays = getCompareDays(todayTime, lastDownloadedTime.time)
+                log.debug('{} days since last downloaded: {}', artifact, compareDays)
+        
+                // Check if the number of days meets the days specified to archive
+                if (!checkTimingPolicy(compareDays, lastDownloadedDays, artifact, 'last downloaded')) {
+                    return false
+                }
+            }
         }
     }
     // Check the age policy if it is set
